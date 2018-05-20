@@ -8,10 +8,15 @@ Decryction:
 
 ```original_text=CBC_DES_DEC(IV,cypher_text,KEY)```
 
-## Documentation 
+## Documentation :
 For further details about how DES works , read this [PDF] .(http://highered.mheducation.com/sites/dl/free/007070208x/877405/Chapter_06_Data_Encription_Standard.pdf)
 and to learn about CBC mode , please visit this [link].(https://de.wikipedia.org/wiki/Cipher_Block_Chaining_Mode) 
 
+
+### Author :
+Adel Belasker<br/>
+E-mail : adel.belasker@gmail.com <br/>
+Linkedin : https://www.linkedin.com/in/belasker/
 
 
 
