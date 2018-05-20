@@ -9,7 +9,6 @@ Key : string of 16 HEX chars
 <br/>
 
 ##Example :
-
 Encrypt the text="Adel Belasker" in CBC mode with the KEY="1f4f8a113b4a5d66" with initial vector ```IV=[0]*40+[1]*20+[0]*4``` :
 
 ``` cypher_text=CBC_DES_ENC(IV,text,KEY)``` <br/>
