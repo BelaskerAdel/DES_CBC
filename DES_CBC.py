@@ -119,44 +119,21 @@ p = [
 
 
 
-# test purpuses
-# test = lambda n: [randint(0, 1) for b in range(1, n + 1)]
-# bin(0x0002000000000001)[2:].zfill(64)
-# ''.join(map(str,res))
-# XOR operation
-#
-# [res[i] ^ res[i] for i in range(64)]
-#from hex string(64bits) to ascii string(8 char) ch=[chr(int(ch[i]+ch[i+1],16)) for i in range(0,16,2)]
 
-
-# from hexa string to binary array of 64 bits :  plaintext=[int(i,2) for i in bin(int('0x'+'123456ABCD132536',16))[2:].zfill(64)]
-# from binary array to hex string hex(int(''.join(map(str,plaintext)),2))[2:]
-#test the content of key_generation result [hex(int(''.join(map(str,var)),2))[2:].zfill(12) for var in res ]
-#####
 
 
 def key_generation(key_64):
-    # ipdb.set_trace()
     subkeys=[]
     key_draft=[]
-    #key_64_p=key_64[:]
+
     c0=[]
     d0=[]
-    #key_draft=key_64[:]
+    
     key_64_p=[key_64[pc1[i]] for i in range(56)]
-
-    # for i in range(0,56):
-    #    key_64_p[i] =key_64[pc1[i]]
-
-    # for i in range(8,0,-1) :
-    #     del(key_64_p[i*8-1])
 
     c0=key_64_p[0:28]
     d0=key_64_p[28:56]
 
-
-
-   # return c0 , d0
     for j in range(0,16):
         for i in range(left_rotations[j]):
             c1=  c0[1:] + c0[:1]
@@ -165,25 +142,7 @@ def key_generation(key_64):
             d0 = d1[:]
         tab_pc2=c1+d1
 
-        # res_pc2 =tab_pc2[:]
-        #""" size of tab_pc2 res_pc2 pc2 """ ; print(len(tab_pc2),len(res_pc2),len(pc2))
-
-
-
         res_pc2=[tab_pc2[pc2[i]] for i in range(48)]
-        # for k in range(0,48):
-        #
-        #    # key_64_p[i] = key_64[pc1[i]]
-        #     res_pc2[k]= tab_pc2[pc2[i]]
-
-        # del(res_pc2[54])
-        # del (res_pc2[43])
-        # del (res_pc2[38])
-        # del(res_pc2[35])
-        # del (res_pc2[25])
-        # del (res_pc2[22])
-        # del (res_pc2[18])
-        # del (res_pc2[9])
 
         subkeys.append(res_pc2)
 
@@ -192,7 +151,7 @@ def key_generation(key_64):
 
 
 
-# f applies on function R-1(32bits) and K1(48bits) it outputs 32bits
+# f applies on function R-1(32bits) and K1(48bits) ,its output is in 32bits
 def f(R,K):
     #Expansion D-box 32bits => 48  bits
     R48=range(48)
@@ -221,7 +180,7 @@ def f(R,K):
 def DES(plaintext_64,key_64):
     subkeys=key_generation(key_64)
     iptext=plaintext_64[:]
-    # ipdb.set_trace()
+   
     for i in range(64):
         iptext[i]=plaintext_64[ip[i]]
     L=iptext[:32]
@@ -233,10 +192,9 @@ def DES(plaintext_64,key_64):
         L = C[:]
 
     res=R+L
-    fptext=res[:] #becareful to the assignment : fptext=res => it means "passage par reference" and fptext=res[:] it means "passage par valeur"
+    fptext=res[:] #becareful to the assignment here : fptext=res => it means passing by refernce and fptext=res[:] it means copy by value
     for i in range(64):
         fptext[i]=res[fp[i]]
-
 
     return fptext
 
@@ -260,7 +218,7 @@ def DES_decrypt(ciphertext,key_64):
     return final_result
 
 
-def CBC_DES_ENC(IV,text,key_hexa): #  vector and text = string of characteres , ,IV un vercteur binaire  64 bits, key_hexa chaine hexa 64bits
+def CBC_DES_ENC(IV,text,key_hexa): # IV : is a 64 bits binary vector and text : is a string of characteres, key_hexa string of HEX chars 
     key_binary = [int(i, 2) for i in bin(int('0x' + key_hexa, 16))[2:].zfill(64)]
     binary_ciphertext_array = []
     binary_text_array = []
@@ -282,9 +240,6 @@ def CBC_DES_ENC(IV,text,key_hexa): #  vector and text = string of characteres , 
         cypher_text+=cipher_block
         init_vect=cipher_block[:]
 
-
-
-
     if(last_block_size != 0):
         block_number=block_number+1
         last_block=binary_text_array[-last_block_size:]+[0]*(64-last_block_size)
@@ -293,7 +248,7 @@ def CBC_DES_ENC(IV,text,key_hexa): #  vector and text = string of characteres , 
         cypher_text += cipher_block
     # ipdb.set_trace()
     # cypher_text_hex = hex(int(''.join(map(str, cypher_text)), 2))[2:].zfill(block_number*16)
-    cypher_text_ascii_string=[chr(int(str(cypher_text[i])+str(cypher_text[i+1])+str(cypher_text[i+2])+str(cypher_text[i+3])+str(cypher_text[i+4])+str(cypher_text[i+5])+str(cypher_text[i+6])+str(cypher_text[i+7]),2)) for i in range(0,249,8)]
+    cypher_text_ascii_string=[chr(int(str(cypher_text[i])+str(cypher_text[i+1])+str(cypher_text[i+2])+str(cypher_text[i+3])+str(cypher_text[i+4])+str(cypher_text[i+5])+str(cypher_text[i+6])+str(cypher_text[i+7]),2)) for i in range(0,len(cypher_text)-1,8)]
 
     return cypher_text_ascii_string  # cypher_text_ascii_string : string (a list) of ascii char
 
@@ -301,14 +256,14 @@ def CBC_DES_ENC(IV,text,key_hexa): #  vector and text = string of characteres , 
 
 
 
-def CBC_DES_DEC(IV,cyphertext,key_hexa): #cypher input as string (or list) of chars ,IV un vercteur binaire  64 bits, key_hexa chaine hexa 64bits
+def CBC_DES_DEC(IV,cyphertext,key_hexa): #cyphertext : is string (or list of chars) ,IV 64 bits binary vector , key_hexa a string of HEX chars
     key_binary=[int(i,2) for i in bin(int('0x'+key_hexa,16))[2:].zfill(64)]
     binary_ciphertext_array=[]
     for i in cyphertext :
         binary_ciphertext_array+=[int(i,2) for i in bin(ord(i))[2:].zfill(8)]
     block_number=len(binary_ciphertext_array)/64
     last_block_size=len(binary_ciphertext_array)%64
-    # if((len(binary_ciphertext_array)%64)!=0) : block_number+=1
+
     # ipdb.set_trace()
 
     init_vect=IV[:]
@@ -319,19 +274,8 @@ def CBC_DES_DEC(IV,cyphertext,key_hexa): #cypher input as string (or list) of ch
         XOR_res = [int(init_vect[i]) ^ text_block[i] for i in range(64)]
         text+=XOR_res
         init_vect=block[:]
-    # ipdb.set_trace()
 
-    # if (last_block_size != 0):
-    #     last_block = binary_ciphertext_array[-last_block_size:] + [0] * (64 - last_block_size)
-    #
-    #     text_block = DES_decrypt(last_block,key_binary)
-    #     XOR_res = [int(init_vect[i]) ^ text_block[i] for i in range(64)]
-    #     text += XOR_res
-
-    # ipdb.set_trace()
-
-    # text_hex = hex(int(''.join(map(str, text)), 2))[2:]
-    text_ascii_string = [chr(int(str(text[i]) + str(text[i + 1])+str(text[i + 2])+str(text[i + 3])+str(text[i + 4])+str(text[i + 5])+str(text[i + 6])+str(text[i + 7]), 2)) for i in range(0, len(text)-8, 8)]
+    text_ascii_string = [chr(int(str(text[i]) + str(text[i + 1])+str(text[i + 2])+str(text[i + 3])+str(text[i + 4])+str(text[i + 5])+str(text[i + 6])+str(text[i + 7]), 2)) for i in range(0, len(text)-1, 8)]
 
 
-    return text_ascii_string  # text_ascii_string : decrypted string (a list)
+    return text_ascii_string  # text_ascii_string : decrypted string (a list of ASCII chars)
