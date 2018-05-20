@@ -1,14 +1,14 @@
 # DES_CBC
 This is a python script for encryption and decryption using the Data Encryption Standard (DES) algorithm in the Cipher Block Chaining (CBC) mode of operation . <br/>
 
-###Inputs :
+### Inputs :
 
 Initial Vector IV : 64 bits binary vector <br/>
 Text : ASCII chars <br/>
 Key : string of 16 HEX chars 
 <br/>
 
-##Example :
+## Example :
 
 Encrypt the text="Adel Belasker" in CBC mode with the KEY="1f4f8a113b4a5d66" with initial vector ```IV=[0]*40+[1]*20+[0]*4``` :
 
