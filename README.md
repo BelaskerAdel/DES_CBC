@@ -25,45 +25,50 @@ read as a walk-through of how DES actually works.
 
 ## Usage
 
-Run the demo and self-test directly:
+### Command line
 
 ```bash
-python DES_CBC.py
+python DES_CBC.py selftest                       # known-answer + round-trip tests, then a demo
+python DES_CBC.py encrypt --key 1f4f8a113b4a5d66 --iv 0000000000010100 --text "Adel Belasker"
+python DES_CBC.py decrypt --key 1f4f8a113b4a5d66 --iv 0000000000010100 --hex f4edf0d304d34f08340b45d4225d2bf0
 ```
 
-Use it as a module:
+### As a module
 
 ```python
 import DES_CBC
 
-key = "1f4f8a113b4a5d66"          # 8 bytes, as 16 hex chars (or a bytes object)
-iv  = bytes([0] * 5 + [1] * 2 + [0])  # 8-byte initialization vector
+key = "1f4f8a113b4a5d66"              # 16 hex chars, or an 8-byte bytes object
+iv  = bytes.fromhex("0000000000010100")  # 8-byte initialization vector
 
 ciphertext = DES_CBC.encrypt(b"Adel Belasker", key, iv)
 plaintext  = DES_CBC.decrypt(ciphertext, key, iv)
-
 assert plaintext == b"Adel Belasker"
+
+# Block-level access via the cipher object (key schedule computed once):
+cipher = DES_CBC.DES(key)
+cipher.encrypt_block(b"12345678")
 ```
 
 ### API
 
-| Function | Description |
+| Symbol | Description |
 |---|---|
 | `encrypt(plaintext: bytes, key, iv: bytes) -> bytes` | DES-CBC encrypt with PKCS#7 padding |
 | `decrypt(ciphertext: bytes, key, iv: bytes) -> bytes` | DES-CBC decrypt and remove padding |
-| `generate_subkeys(key_bits)` | Derive the 16 round subkeys |
-| `encrypt_block(block, subkeys)` / `decrypt_block(...)` | Single 8-byte block operations |
+| `DES(key)` | Block cipher object; `encrypt_block` / `decrypt_block` on 8-byte blocks |
+| `self_test()` | Run the known-answer and round-trip checks |
 
 `key` may be an 8-byte `bytes` object or a 16-character hex string.
 
 ## How DES works (quick tour of the code)
 
-1. **Key schedule** (`generate_subkeys`) — PC-1 selects 56 bits from the 64-bit key,
+1. **Key schedule** (`DES._key_schedule`) — PC-1 selects 56 bits from the 64-bit key,
    which is then split and rotated each round, and PC-2 picks the 48-bit subkey.
 2. **Initial permutation** (`IP`) reorders the 64 input bits.
 3. **16 Feistel rounds** — each round runs the right half through the round function
-   `f` (expansion → XOR with subkey → S-boxes → permutation `P`) and XORs the result
-   into the left half.
+   (`DES._round_function`: expansion → XOR with subkey → S-boxes → permutation `P`) and
+   XORs the result into the left half.
 4. **Final permutation** (`FP`) produces the output block.
 5. **CBC mode** XORs each plaintext block with the previous ciphertext block (or the
    IV for the first block) before encryption, so identical blocks encrypt differently.
