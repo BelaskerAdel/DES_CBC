@@ -28,19 +28,19 @@ read as a walk-through of how DES actually works.
 Run the demo and self-test directly:
 
 ```bash
-python des_cbc.py
+python DES_CBC.py
 ```
 
 Use it as a module:
 
 ```python
-import des_cbc
+import DES_CBC
 
 key = "1f4f8a113b4a5d66"          # 8 bytes, as 16 hex chars (or a bytes object)
 iv  = bytes([0] * 5 + [1] * 2 + [0])  # 8-byte initialization vector
 
-ciphertext = des_cbc.encrypt(b"Adel Belasker", key, iv)
-plaintext  = des_cbc.decrypt(ciphertext, key, iv)
+ciphertext = DES_CBC.encrypt(b"Adel Belasker", key, iv)
+plaintext  = DES_CBC.decrypt(ciphertext, key, iv)
 
 assert plaintext == b"Adel Belasker"
 ```
